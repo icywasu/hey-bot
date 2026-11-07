@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ผู้ช่วยส่วนตัว</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+:root{
+  --bg:#F7F7FF; --card:#fff; --ink:#1F2340; --muted:#7B8099; --line:#ECEDF7;
+  --violet:#7C5CFF; --sun:#FFB400; --mint:#12B886; --sky:#2EA8FF; --coral:#FF5C7A;
+  --accent:var(--violet); --accent-soft:#EFEBFF;
+  --r:20px; --shadow:0 6px 24px rgba(60,50,140,.08);
+}
+body[data-tab=remind]{--accent:var(--violet);--accent-soft:#EFEBFF}
+body[data-tab=note]{--accent:var(--sun);--accent-soft:#FFF5D6}
+body[data-tab=money]{--accent:var(--mint);--accent-soft:#DDF8EE}
+body[data-tab=sched]{--accent:var(--sky);--accent-soft:#DFF1FF}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:'Noto Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 10px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:22px;margin:0;font-weight:700}
+header p{margin:0;color:var(--muted);font-size:13px}
+.iconbtn{width:42px;height:42px;border-radius:14px;border:0;background:var(--card);box-shadow:var(--shadow);font-size:18px;cursor:pointer}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin:12px 0}
+.card h2{font-size:16px;margin:0 0 10px;font-weight:600}
+.sub{color:var(--muted);font-size:13px}
+input,textarea,select{width:100%;font:inherit;color:inherit;background:#FAFAFE;border:1.5px solid var(--line);border-radius:14px;padding:11px 13px;outline:none;transition:.15s}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);background:#fff}
+textarea{resize:vertical;min-height:84px}
+label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:14px;background:var(--accent);color:#fff;font:inherit;font-weight:600;padding:12px 18px;cursor:pointer;width:100%;margin-top:12px}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--accent-soft);color:var(--accent)}
+.btn.small{width:auto;padding:8px 14px;margin:0;font-size:13px}
+.seg{display:flex;background:var(--accent-soft);border-radius:14px;padding:4px;gap:4px;margin-bottom:10px}
+.seg button{flex:1;border:0;background:transparent;font:inherit;font-weight:600;padding:8px;border-radius:11px;color:var(--muted);cursor:pointer}
+.seg button.on{background:#fff;color:var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.group{font-size:13px;font-weight:600;color:var(--accent);margin:18px 4px 6px}
+.item{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;margin:8px 0}
+.item.done{opacity:.45}.item.done .t{text-decoration:line-through}
+.chip{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:4px 9px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.item .body{flex:1;min-width:0}.item .t{font-weight:500;word-break:break-word}.item .m{font-size:12.5px;color:var(--muted)}
+.x{border:0;background:none;color:#B5B8CC;font-size:20px;cursor:pointer;padding:4px 6px}
+.check{width:24px;height:24px;border-radius:8px;border:2px solid var(--accent);background:#fff;cursor:pointer;flex:none;color:#fff;font-size:14px;line-height:1}
+.check.on{background:var(--accent)}
+.empty{text-align:center;color:var(--muted);padding:26px 0}
+.note{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:14px;margin:8px 0;border-left:5px solid var(--accent)}
+.note .txt{white-space:pre-wrap;word-break:break-word}
+.note .bar{display:flex;gap:6px;margin-top:8px;align-items:center;font-size:12px;color:var(--muted)}
+.note .bar .sp{flex:1}
+.hero{border-radius:24px;padding:20px;color:#fff;background:linear-gradient(135deg,#12B886,#2EC4B6);box-shadow:0 10px 28px rgba(18,184,134,.3);margin:12px 0}
+.hero.warn{background:linear-gradient(135deg,#FFB400,#FF9A3D)}
+.hero.over{background:linear-gradient(135deg,#FF5C7A,#FF7A59)}
+.hero.setup{background:linear-gradient(135deg,#7C5CFF,#5B8CFF)}
+.hero small{opacity:.9}.hero .big{font-size:38px;font-weight:700;line-height:1.15;margin:2px 0 8px}
+.prog{height:10px;background:rgba(255,255,255,.35);border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:#fff;border-radius:99px;transition:.4s}
+.hero .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;font-size:12px}
+.hero .grid b{display:block;font-size:15px}
+.tip{background:rgba(255,255,255,.2);border-radius:12px;padding:8px 12px;margin-top:12px;font-size:13px}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.plan{border:2px solid var(--line);background:#fff;border-radius:16px;padding:10px 6px;text-align:center;cursor:pointer;font:inherit;color:inherit}
+.plan.on{border-color:var(--accent);background:var(--accent-soft)}
+.plan b{display:block;font-size:14px}.plan span{display:block;font-size:11.5px;color:var(--muted)}
+.bars .b{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px}
+.bars .b em{font-style:normal;width:96px;flex:none}
+.bars .b .tr{flex:1;height:9px;background:var(--line);border-radius:99px;overflow:hidden}
+.bars .b .tr i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bars .b span{width:64px;text-align:right;flex:none;font-weight:600}
+.amt{font-weight:700}.amt.in{color:var(--mint)}.amt.out{color:var(--coral)}
+.ico{width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:grid;place-items:center;font-size:18px;flex:none}
+.days{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none}
+.days button{flex:none;border:0;background:#fff;box-shadow:var(--shadow);border-radius:14px;padding:8px 13px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}
+.days button.on{background:var(--accent);color:#fff}
+.cls{display:flex;gap:12px;align-items:stretch;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;margin:8px 0;position:relative;overflow:hidden}
+.cls .bar{width:5px;border-radius:5px;flex:none}
+.cls .tm{font-size:12.5px;color:var(--muted);font-weight:600}
+.cls .s{font-weight:600}.cls.passed{opacity:.45}
+.badge{font-size:11.5px;font-weight:700;border-radius:8px;padding:2px 8px;color:#fff;background:var(--sky);margin-left:6px}
+.badge.now{background:var(--coral)}
+.now-box{display:flex;align-items:center;gap:12px}.now-box .em{font-size:30px}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:20}
+nav .in{display:flex;gap:6px;width:100%;max-width:560px}
+nav button{flex:1;border:0;background:transparent;font:inherit;font-size:11.5px;font-weight:600;color:var(--muted);padding:6px 0;border-radius:14px;cursor:pointer}
+nav button .e{display:block;font-size:20px;filter:grayscale(1);opacity:.7}
+nav button.on{color:var(--c);background:var(--cs)}nav button.on .e{filter:none;opacity:1}
+dialog{border:0;border-radius:24px;padding:20px;width:min(92vw,460px);box-shadow:0 20px 60px rgba(0,0,0,.25);color:var(--ink);font-family:inherit}
+dialog::backdrop{background:rgba(31,35,64,.45)}
+dialog h3{margin:0 0 6px}
+.sw{display:flex;gap:10px;margin-top:6px}.sw label{margin:0;cursor:pointer}
+.sw input{display:none}.sw i{display:block;width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line)}
+.sw input:checked+i{box-shadow:0 0 0 3px var(--ink)}
+.switch{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.switch input{width:46px;height:26px;appearance:none;background:#D8DAEA;border-radius:99px;position:relative;cursor:pointer;padding:0;border:0}
+.switch input:checked{background:var(--mint)}
+.switch input::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.switch input:checked::after{left:23px}
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:88vw;font-size:14px}
+#toast.show{opacity:1;transform:translateX(-50%)}#toast.err{background:var(--coral)}
+.skel{height:90px;border-radius:20px;background:linear-gradient(90deg,#eee 25%,#f7f7f7 50%,#eee 75%);background-size:200% 100%;animation:sk 1.2s infinite;margin:12px 0}
+@keyframes sk{to{background-position:-200% 0}}
+.notice{background:#FFF5D6;border-radius:16px;padding:14px;margin:14px 0;font-size:14px}
+</style>
+</head>
+<body data-tab="remind">
+<div class="wrap">
+  <header>
+    <div><h1 id="hello">สวัสดี 👋</h1><p id="dateline"></p></div>
+    <button class="iconbtn" data-act="settings" aria-label="ตั้งค่า">⚙️</button>
+  </header>
+  <main id="app"><div class="skel"></div><div class="skel"></div></main>
+</div>
+
+<nav><div class="in" id="tabs"></div></nav>
+<div id="toast"></div>
+
+<dialog id="dlgNote"><h3>แก้ไขโน้ต</h3>
+  <form data-form="noteEdit"><input type="hidden" name="id"><textarea name="text" rows="6"></textarea>
+  <div class="row"><button type="button" class="btn ghost" data-act="close">ยกเลิก</button><button class="btn">บันทึก</button></div></form>
+</dialog>
+
+<dialog id="dlgSched"><h3 id="schedTitle">เพิ่มคาบเรียน</h3>
+  <form data-form="sched"><input type="hidden" name="id">
+    <label>วัน</label><select name="day"></select>
+    <div class="row"><div><label>เริ่ม</label><input type="time" name="start" required value="09:00"></div><div><label>จบ</label><input type="time" name="end" required value="10:30"></div></div>
+    <label>วิชา</label><input name="subject" required placeholder="เช่น คณิตศาสตร์">
+    <div class="row"><div><label>ห้อง</label><input name="room" placeholder="ห้อง 301"></div><div><label>ผู้สอน</label><input name="teacher" placeholder="อ.สมชาย"></div></div>
+    <label>สี</label><div class="sw" id="swatches"></div>
+    <div class="row"><button type="button" class="btn ghost" data-act="close">ยกเลิก</button><button class="btn">บันทึก</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgSet"><h3>ตั้งค่า</h3>
+  <form data-form="settings">
+    <div class="switch"><span>สรุปประจำวันตอนเช้า<br><span class="sub">ตารางเรียน นัดหมาย งบวันนี้</span></span><input type="checkbox" name="dailyNotify"></div>
+    <div class="switch"><span>แจ้งก่อนเข้าเรียน 15 นาที</span><input type="checkbox" name="classAlert"></div>
+    <label>แจ้งเตือนนัดหมายล่วงหน้า</label>
+    <select name="remindLead"><option value="0">ตรงเวลา</option><option value="15">15 นาที</option><option value="30">30 นาที</option><option value="60">1 ชั่วโมง</option><option value="120">2 ชั่วโมง</option><option value="1440">1 วัน</option></select>
+    <div class="row"><button type="button" class="btn ghost" data-act="close">ปิด</button><button class="btn">บันทึก</button></div>
+  </form>
+</dialog>
+
+<script>
+/* ===== ตั้งค่า 2 อย่างนี้หลัง deploy ===== */
+const CONFIG = {
+  API_URL: '',   // URL ของ Apps Script Web App (ลงท้ายด้วย /exec)
+  LIFF_ID: ''    // LIFF ID จาก LINE Developers
+};
+
+/* ===== helpers ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const baht = n => (n < 0 ? '-' : '') + '฿' + Math.abs(Math.round(n)).toLocaleString('th-TH');
+const TH_DAY = ['', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัส', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+const TH_DAY_S = ['', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.', 'อา.'];
+const TH_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const COLORS = ['#7C5CFF', '#2EA8FF', '#12B886', '#FFB400', '#FF5C7A', '#FF8A3D'];
+const TABS = [
+  { id: 'remind', e: '⏰', n: 'เตือน', c: '#7C5CFF', cs: '#EFEBFF' },
+  { id: 'note',   e: '📝', n: 'โน้ต',  c: '#E39A00', cs: '#FFF5D6' },
+  { id: 'money',  e: '💰', n: 'เงิน',  c: '#0E9F74', cs: '#DDF8EE' },
+  { id: 'sched',  e: '🎒', n: 'เรียน', c: '#1F8EE6', cs: '#DFF1FF' }
+];
+const dateObj = ds => new Date(ds + 'T12:00:00');
+const fmtDate = ds => { const d = dateObj(ds); return `${TH_DAY_S[d.getDay() || 7]} ${d.getDate()} ${TH_MON[d.getMonth()]}`; };
+const addDays = (ds, n) => { const d = dateObj(ds); d.setDate(d.getDate() + n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const toMin = t => { const [h, m] = String(t).split(':'); return (+h) * 60 + (+m); };
+
+let S = null, tab = 'remind', rmode = 'quick', txType = 'expense', selDay = (new Date().getDay() || 7);
+let token = null, profile = null;
+
+/* ===== API ===== */
+async function api(action, data) {
+  const res = await fetch(CONFIG.API_URL, {
+    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action, data: data || {}, accessToken: token, userId: profile && profile.userId })
+  });
+  const j = await res.json();
+  if (!j.ok) throw new Error(j.error || 'เกิดข้อผิดพลาด');
+  S = j.state;
+  return j.extra;
+}
+async function run(action, data, okMsg) {
+  try {
+    const r = await api(action, data);
+    render();
+    if (okMsg) toast(typeof okMsg === 'function' ? okMsg(r) : okMsg);
+    return r;
+  } catch (e) { toast(e.message, true); }
+}
+let toastT;
+function toast(msg, err) {
+  const t = $('#toast'); t.textContent = msg; t.className = 'show' + (err ? ' err' : '');
+  clearTimeout(toastT); toastT = setTimeout(() => t.className = '', 2600);
+}
+
+/* ===== หน้าต่างๆ ===== */
+function pageRemind() {
+  const today = S.today, tomorrow = addDays(today, 1);
+  const rs = S.reminders;
+  const groups = [['วันนี้', r => r.date === today], ['พรุ่งนี้', r => r.date === tomorrow], ['ถัดไป', r => r.date > tomorrow], ['ผ่านมาแล้ว', r => r.date < today]];
+  const item = r => `<div class="item ${r.done ? 'done' : ''}">
+    <button class="check ${r.done ? 'on' : ''}" data-act="rtoggle" data-id="${esc(r.id)}">${r.done ? '✓' : ''}</button>
+    <div class="body"><div class="t">${esc(r.title)}</div><div class="m">${r.date !== today && r.date !== tomorrow ? fmtDate(r.date) + ' · ' : ''}${r.place ? '📍 ' + esc(r.place) : ''}</div></div>
+    <span class="chip">${r.time || 'ทั้งวัน'}</span>
+    <button class="x" data-act="rdel" data-id="${esc(r.id)}">×</button></div>`;
+  const list = groups.map(([name, f]) => {
+    const g = rs.filter(f); if (!g.length) return '';
+    return `<div class="group">${name}</div>` + g.map(item).join('');
+  }).join('');
+  return `<section class="card">
+    <div class="seg"><button class="${rmode === 'quick' ? 'on' : ''}" data-act="rmode" data-v="quick">✍️ พิมพ์เร็ว</button><button class="${rmode === 'form' ? 'on' : ''}" data-act="rmode" data-v="form">📋 ฟอร์ม</button></div>
+    ${rmode === 'quick' ? `<form data-form="remindQuick">
+      <textarea name="text" placeholder="พิมพ์ได้หลายบรรทัด บรรทัดละ 1 เรื่อง&#10;พรุ่งนี้ 14:30 ประชุมทีม @ออฟฟิศ&#10;15/11 09:00 หาหมอ @รพ.กรุงเทพ&#10;วันนี้ 18:00 โทรหาแม่"></textarea>
+      <div class="sub" style="margin-top:6px">รูปแบบ: วัน/เวลา ชื่อกิจกรรม @สถานที่ (วัน: วันนี้ พรุ่งนี้ มะรืน หรือ 15/11)</div>
+      <button class="btn">เพิ่มทั้งหมด</button></form>` :
+    `<form data-form="remindForm">
+      <div class="row"><div><label>วันที่</label><input type="date" name="date" value="${today}" required></div><div><label>เวลา</label><input type="time" name="time"></div></div>
+      <label>ชื่อกิจกรรม</label><input name="title" required placeholder="เช่น ประชุมทีม">
+      <label>สถานที่</label><input name="place" placeholder="ไม่ใส่ก็ได้">
+      <button class="btn">ตั้งเตือน</button></form>`}
+  </section>${list || '<div class="empty">ยังไม่มีนัดหมาย ✨<br>เพิ่มรายการแรกได้เลย</div>'}`;
+}
+
+function pageNote() {
+  const notes = S.notes.map(n => `<div class="note">
+    <div class="txt">${esc(n.text)}</div>
+    <div class="bar"><span>${esc(String(n.createdAt).slice(8, 10) * 1)} ${TH_MON[+String(n.createdAt).slice(5, 7) - 1] || ''}</span><span class="sp"></span>
+      <button class="x" title="ปักหมุด" data-act="npin" data-id="${esc(n.id)}">${String(n.pinned) === '1' ? '📌' : '📍'}</button>
+      <button class="x" data-act="nedit" data-id="${esc(n.id)}">✏️</button>
+      <button class="x" data-act="ndel" data-id="${esc(n.id)}">×</button></div></div>`).join('');
+  return `<section class="card"><h2>จดโน้ตใหม่</h2><form data-form="note">
+    <textarea name="text" placeholder="บันทึกช่วยจำ..." required></textarea><button class="btn">บันทึก</button></form></section>
+    ${notes || '<div class="empty">ยังไม่มีโน้ต 📝</div>'}`;
+}
+
+function catIcon(name) { const all = S.cats.expense.concat(S.cats.income); const c = all.find(x => x.name === name); return c ? c.icon : '🧾'; }
+
+function pageMoney() {
+  const b = S.budget, st = S.settings;
+  let hero;
+  if (b.status === 'setup') {
+    hero = `<div class="hero setup"><small>เริ่มต้น</small><div class="big">ตั้งรายได้ก่อนนะ</div><div class="tip">กรอก "รายได้ต่อเดือน" ด้านล่าง ระบบจะบอกว่าวันนี้ใช้ได้เท่าไหร่</div></div>`;
+  } else {
+    const pct = b.todayQuota > 0 ? Math.min(100, b.varToday / b.todayQuota * 100) : (b.varToday > 0 ? 100 : 0);
+    const label = b.status === 'over' ? '⚠️ วันนี้เกินโควต้าแล้ว' : b.status === 'warn' ? 'ใกล้ครบโควต้าวันนี้' : 'เหลือใช้ได้วันนี้';
+    const big = b.status === 'over' ? 'เกิน ' + baht(-b.todayLeft) : baht(b.todayLeft);
+    hero = `<div class="hero ${b.status}"><small>${label}</small><div class="big">${big}</div>
+      <div class="prog"><i style="width:${pct}%"></i></div>
+      <div class="grid"><div><small>โควต้า/วัน</small><b>${baht(b.todayQuota)}</b></div><div><small>ใช้ไปวันนี้</small><b>${baht(b.varToday)}</b></div><div><small>เหลือทั้งเดือน</small><b>${baht(b.monthLeft)}</b></div></div>
+      <div class="tip">💡 ${esc(b.tip)}</div></div>`;
+  }
+  const cats = (txType === 'income' ? S.cats.income : S.cats.expense);
+  const maxCat = Math.max(1, ...b.byCat.map(c => c.amount));
+  const tx = S.tx.map(t => `<div class="item"><div class="ico">${catIcon(t.category)}</div>
+    <div class="body"><div class="t">${esc(t.note || t.category)}</div><div class="m">${fmtDate(t.date)} · ${esc(t.category)}</div></div>
+    <span class="amt ${t.type === 'income' ? 'in' : 'out'}">${t.type === 'income' ? '+' : '-'}${baht(t.amount).replace('฿', '')}</span>
+    <button class="x" data-act="txdel" data-id="${esc(t.id)}">×</button></div>`).join('');
+  return `${hero}
+  <section class="card"><h2>บันทึกรายการ</h2>
+    <div class="seg"><button class="${txType === 'expense' ? 'on' : ''}" data-act="txtype" data-v="expense">รายจ่าย</button><button class="${txType === 'income' ? 'on' : ''}" data-act="txtype" data-v="income">รายรับ</button></div>
+    <form data-form="tx">
+      <div class="row"><div><label>จำนวนเงิน (บาท)</label><input name="amount" type="number" inputmode="decimal" min="0" step="any" required placeholder="0"></div>
+      <div><label>วันที่</label><input type="date" name="date" value="${S.today}"></div></div>
+      <label>รายละเอียด</label><input name="note" placeholder="${txType === 'income' ? 'เช่น เงินเดือน' : 'เช่น ข้าวมันไก่'}">
+      <label>หมวดหมู่</label><select name="category"><option value="">✨ อัตโนมัติ (ไม่ต้องเลือก)</option>${cats.map(c => `<option value="${esc(c.name)}">${c.icon} ${esc(c.name)}</option>`).join('')}</select>
+      <button class="btn">บันทึก</button></form></section>
+  <section class="card"><h2>วางแผนเดือนนี้</h2>
+    <form data-form="plan"><div class="row"><div><label>รายได้ต่อเดือน</label><input name="monthlyIncome" type="number" inputmode="decimal" value="${esc(st.monthlyIncome)}" placeholder="เช่น 20000"></div>
+    <div><label>รายจ่ายประจำ (ค่าเช่า/ผ่อน)</label><input name="fixedExpenses" type="number" inputmode="decimal" value="${esc(st.fixedExpenses)}" placeholder="0"></div></div>
+    <button class="btn ghost">บันทึก</button></form>
+    ${b.baseIncome > 0 ? `<label style="margin-top:14px">เลือกเป้าเงินเก็บ — เดือนนี้ (เก็บเท่าไหร่ก็ได้)</label>
+    <div class="plans">${b.plans.map(p => `<button class="plan ${b.saveTarget === p.save ? 'on' : ''}" data-act="plan" data-save="${p.save}"><b>${p.label}</b><span>เก็บ ${baht(p.save)}</span><span>ใช้ได้ ${baht(p.perDay)}/วัน</span></button>`).join('')}</div>
+    <form data-form="save" class="row" style="align-items:end"><div><label>หรือกำหนดเอง (บาท)</label><input name="saveAmount" type="number" inputmode="decimal" min="0" value="${b.saveTarget}"></div><div style="flex:none"><button class="btn small" style="padding:12px 16px">ตั้ง</button></div></form>
+    <div class="sub" style="margin-top:12px;line-height:1.8">
+      รายได้ ${baht(b.baseIncome)} − เก็บ ${baht(b.saveTarget)} − ประจำ ${baht(b.fixed)} = <b style="color:var(--ink)">ใช้ได้ ${baht(b.spendable)}</b><br>
+      เฉลี่ยวันละ ${baht(b.dailyBase)} · ที่ใช้จริงเฉลี่ย ${baht(b.avgPerDay)}/วัน<br>
+      ถ้าใช้เท่านี้ต่อไป สิ้นเดือนจะเก็บได้ประมาณ <b style="color:${b.projectedSaving >= b.saveTarget ? 'var(--mint)' : 'var(--coral)'}">${baht(b.projectedSaving)}</b></div>` : ''}
+  </section>
+  ${b.byCat.length ? `<section class="card bars"><h2>รายจ่ายแยกหมวด</h2>${b.byCat.map(c => `<div class="b"><em>${catIcon(c.name)} ${esc(c.name)}</em><div class="tr"><i style="width:${c.amount / maxCat * 100}%"></i></div><span>${baht(c.amount)}</span></div>`).join('')}</section>` : ''}
+  <div class="group">รายการเดือนนี้</div>${tx || '<div class="empty">ยังไม่มีรายการ 💸</div>'}`;
+}
+
+function pageSched() {
+  const todayDow = new Date().getDay() || 7;
+  const nowM = new Date().getHours() * 60 + new Date().getMinutes();
+  const todays = S.schedule.filter(c => +c.day === todayDow);
+  let head, nextId = null;
+  const cur = todays.find(c => nowM >= toMin(c.start) && nowM < toMin(c.end));
+  const nxt = todays.find(c => toMin(c.start) > nowM);
+  if (cur) { head = ['📖', `ตอนนี้กำลังเรียน ${esc(cur.subject)}`, `จนถึง ${cur.end}${cur.room ? ' · ' + esc(cur.room) : ''}`]; }
+  else if (nxt) { head = ['⏳', `คาบถัดไป: ${esc(nxt.subject)}`, `เริ่ม ${nxt.start}${nxt.room ? ' · ' + esc(nxt.room) : ''}`]; nextId = nxt.id; }
+  else if (todays.length) head = ['🎉', 'เรียนครบทุกคาบแล้ววันนี้', 'พักผ่อนได้เลย'];
+  else head = ['🛋️', 'วันนี้ไม่มีเรียน', 'ว่างทั้งวัน'];
+  const row = (c, mark) => {
+    const passed = +c.day === todayDow && nowM >= toMin(c.end);
+    const isNow = cur && cur.id === c.id;
+    return `<div class="cls ${mark && passed ? 'passed' : ''}"><div class="bar" style="background:${esc(c.color || '#2EA8FF')}"></div>
+      <div class="body" style="flex:1;min-width:0"><div class="tm">${c.start} – ${c.end}${mark && isNow ? '<span class="badge now">กำลังเรียน</span>' : ''}${mark && nextId === c.id ? '<span class="badge">ถัดไป</span>' : ''}</div>
+      <div class="s">${esc(c.subject)}</div><div class="m sub">${[c.room && '📍 ' + esc(c.room), c.teacher && '👤 ' + esc(c.teacher)].filter(Boolean).join(' · ')}</div></div>
+      <button class="x" data-act="sedit" data-id="${esc(c.id)}">✏️</button><button class="x" data-act="sdel" data-id="${esc(c.id)}">×</button></div>`;
+  };
+  const dayList = S.schedule.filter(c => +c.day === selDay);
+  return `<section class="card"><div class="now-box"><div class="em">${head[0]}</div><div><div style="font-weight:600">${head[1]}</div><div class="sub">${head[2]}</div></div></div>
+    ${todays.length ? `<div style="margin-top:8px">${todays.map(c => row(c, true)).join('')}</div>` : ''}</section>
+  <div class="group">ตารางทั้งสัปดาห์</div>
+  <div class="days">${[1,2,3,4,5,6,7].map(d => `<button class="${selDay === d ? 'on' : ''}" data-act="day" data-v="${d}">${TH_DAY[d]}${d === todayDow ? ' •' : ''}</button>`).join('')}</div>
+  ${dayList.map(c => row(c, false)).join('') || `<div class="empty">วัน${TH_DAY[selDay]}ยังไม่มีคาบเรียน</div>`}
+  <button class="btn" data-act="sadd">＋ เพิ่มคาบเรียน</button>
+  <p class="sub" style="text-align:center;margin-top:14px">ระบบจะส่งสรุปตารางเรียนทุกเช้า และแจ้งก่อนเข้าเรียน 15 นาที</p>`;
+}
+
+/* ===== render ===== */
+function render() {
+  if (!S) return;
+  document.body.dataset.tab = tab;
+  $('#hello').textContent = 'สวัสดี' + (S.user.name ? ' ' + S.user.name : '') + ' 👋';
+  $('#dateline').textContent = 'วัน' + TH_DAY[dateObj(S.today).getDay() || 7] + 'ที่ ' + dateObj(S.today).getDate() + ' ' + TH_MON[dateObj(S.today).getMonth()] + ' ' + (dateObj(S.today).getFullYear() + 543);
+  $('#tabs').innerHTML = TABS.map(t => `<button class="${tab === t.id ? 'on' : ''}" style="--c:${t.c};--cs:${t.cs}" data-tab="${t.id}"><span class="e">${t.e}</span>${t.n}</button>`).join('');
+  $('#app').innerHTML = ({ remind: pageRemind, note: pageNote, money: pageMoney, sched: pageSched })[tab]();
+}
+
+/* ===== events ===== */
+document.addEventListener('click', e => {
+  const tb = e.target.closest('[data-tab]');
+  if (tb) { tab = tb.dataset.tab; render(); scrollTo(0, 0); return; }
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const id = el.dataset.id, v = el.dataset.v;
+  switch (el.dataset.act) {
+    case 'close': el.closest('dialog').close(); break;
+    case 'rmode': rmode = v; render(); break;
+    case 'txtype': txType = v; render(); break;
+    case 'day': selDay = +v; render(); break;
+    case 'rtoggle': run('reminder.toggle', { id }); break;
+    case 'rdel': if (confirm('ลบนัดหมายนี้?')) run('reminder.delete', { id }, 'ลบแล้ว'); break;
+    case 'npin': run('note.pin', { id }); break;
+    case 'ndel': if (confirm('ลบโน้ตนี้?')) run('note.delete', { id }, 'ลบแล้ว'); break;
+    case 'nedit': { const n = S.notes.find(x => x.id === id); const f = $('#dlgNote form'); f.id.value = id; f.text.value = n.text; $('#dlgNote').showModal(); break; }
+    case 'txdel': if (confirm('ลบรายการนี้?')) run('tx.delete', { id }, 'ลบแล้ว'); break;
+    case 'plan': run('settings.save', { saveAmount: el.dataset.save }, 'ตั้งเป้าเงินเก็บแล้ว'); break;
+    case 'sdel': if (confirm('ลบคาบเรียนนี้?')) run('sched.delete', { id }, 'ลบแล้ว'); break;
+    case 'sadd': openSched(); break;
+    case 'sedit': openSched(S.schedule.find(x => x.id === id)); break;
+    case 'settings': openSettings(); break;
+  }
+});
+
+function openSched(c) {
+  const f = $('#dlgSched form');
+  f.reset();
+  f.day.innerHTML = [1,2,3,4,5,6,7].map(d => `<option value="${d}">${TH_DAY[d]}</option>`).join('');
+  f.day.value = c ? c.day : selDay;
+  f.id.value = c ? c.id : '';
+  if (c) { f.start.value = c.start; f.end.value = c.end; f.subject.value = c.subject; f.room.value = c.room; f.teacher.value = c.teacher; }
+  const cur = c ? c.color : COLORS[Math.floor(Math.random() * COLORS.length)];
+  $('#swatches').innerHTML = COLORS.map(x => `<label><input type="radio" name="color" value="${x}" ${x === cur ? 'checked' : ''}><i style="background:${x}"></i></label>`).join('');
+  $('#schedTitle').textContent = c ? 'แก้ไขคาบเรียน' : 'เพิ่มคาบเรียน';
+  $('#dlgSched').showModal();
+}
+function openSettings() {
+  const f = $('#dlgSet form'), s = S.settings;
+  f.dailyNotify.checked = s.dailyNotify === '1'; f.classAlert.checked = s.classAlert === '1'; f.remindLead.value = s.remindLead;
+  $('#dlgSet').showModal();
+}
+
+document.addEventListener('submit', async e => {
+  const f = e.target; const k = f.dataset.form; if (!k) return;
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(f).entries());
+  const btn = f.querySelector('button:not([type=button])'); if (btn) btn.disabled = true;
+  try {
+    switch (k) {
+      case 'remindQuick': {
+        const r = await run('reminder.addText', { text: d.text }, r => `เพิ่มแล้ว ${r.added.length} รายการ` + (r.failed.length ? ` (อ่านไม่ออก ${r.failed.length})` : ''));
+        break;
+      }
+      case 'remindForm': await run('reminder.add', d, 'ตั้งเตือนแล้ว ⏰'); break;
+      case 'note': await run('note.add', d, 'จดแล้ว 📝'); break;
+      case 'noteEdit': await run('note.update', d, 'บันทึกแล้ว'); $('#dlgNote').close(); break;
+      case 'tx': d.type = txType; await run('tx.add', d, r => `บันทึกแล้ว · ${r.category}`); break;
+      case 'plan': await run('settings.save', d, 'บันทึกแล้ว'); break;
+      case 'save': await run('settings.save', { saveAmount: d.saveAmount || '0' }, 'ตั้งเป้าเงินเก็บแล้ว'); break;
+      case 'sched': { const ok = await run(d.id ? 'sched.update' : 'sched.add', d, 'บันทึกคาบเรียนแล้ว'); if (ok !== undefined) $('#dlgSched').close(); break; }
+      case 'settings': {
+        const r = await run('settings.save', { dailyNotify: f.dailyNotify.checked ? '1' : '0', classAlert: f.classAlert.checked ? '1' : '0', remindLead: d.remindLead }, 'บันทึกการตั้งค่าแล้ว');
+        $('#dlgSet').close(); break;
+      }
+    }
+  } finally { if (btn) btn.disabled = false; }
+});
+
+/* ===== start ===== */
+async function boot() {
+  if (!CONFIG.API_URL) {
+    $('#app').innerHTML = '<div class="notice">⚙️ ยังไม่ได้ตั้งค่า <b>CONFIG.API_URL</b> ในไฟล์ index.html<br>ดูขั้นตอนใน README.md</div>';
+    return;
+  }
+  try {
+    if (CONFIG.LIFF_ID && window.liff) {
+      await liff.init({ liffId: CONFIG.LIFF_ID });
+      if (!liff.isLoggedIn()) { liff.login(); return; }
+      token = liff.getAccessToken();
+      profile = await liff.getProfile();
+    }
+    await api('init');
+    render();
+  } catch (e) {
+    $('#app').innerHTML = `<div class="notice">เชื่อมต่อไม่สำเร็จ: ${esc(e.message)}</div>`;
+  }
+}
+boot();
+</script>
+</body>
+</html>
